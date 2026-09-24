@@ -40,19 +40,23 @@
   if (menuBtn && mobileNav) {
     const main = $("main");
     const footer = $(".site-footer");
+    const positionNav = () => {
+      mobileNav.style.top = `${Math.max(0, header.getBoundingClientRect().bottom)}px`;
+    };
     const setOpen = (open) => {
       menuBtn.setAttribute("aria-expanded", String(open));
       menuBtn.querySelector("[data-menu-label]").textContent = open ? menuBtn.dataset.close : menuBtn.dataset.open;
       mobileNav.classList.toggle("is-open", open);
       document.body.classList.toggle("nav-open", open);
       [main, footer].forEach((el) => el && (open ? el.setAttribute("inert", "") : el.removeAttribute("inert")));
-      if (open) { const first = mobileNav.querySelector("a"); first && first.focus({ preventScroll: true }); }
+      if (open) { positionNav(); const first = mobileNav.querySelector("a"); first && first.focus({ preventScroll: true }); }
     };
     menuBtn.addEventListener("click", () => setOpen(menuBtn.getAttribute("aria-expanded") !== "true"));
     document.addEventListener("keydown", (e) => {
       if (e.key === "Escape" && mobileNav.classList.contains("is-open")) { setOpen(false); menuBtn.focus(); }
     });
     mobileNav.addEventListener("click", (e) => { if (e.target.closest("a")) setOpen(false); });
+    window.addEventListener("resize", () => { if (mobileNav.classList.contains("is-open")) positionNav(); });
     window.matchMedia("(min-width: 1080px)").addEventListener("change", (m) => { if (m.matches) setOpen(false); });
   }
 
